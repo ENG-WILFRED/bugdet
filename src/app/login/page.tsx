@@ -20,13 +20,14 @@ export default function LoginPage() {
   }, []);
 
   const handleLogin = async () => {
+    localStorage.clear(); // Clear localStorage on login attempt
     setLoading(true);
     setToast(null);
     try {
       const user = await login(name, password);
       localStorage.setItem("user", JSON.stringify(user)); // Store user in localStorage
       setToast({ message: 'Login successful 🎉', type: 'success' });
-      router.push('/dashboard'); // Redirect to dashboard
+      router.push('/dashboard'); 
     } catch (e) {
       setToast({ message: `Invalid credentials ${e}`, type: 'error' });
     } finally {

@@ -281,7 +281,7 @@ export default function DashboardPage() {
                 width: "900px",                 // Centered width
                 maxWidth: "100%",
             }}>
-      
+
                 <Button
                     onClick={handleLogout}
                     style={{
@@ -353,48 +353,59 @@ export default function DashboardPage() {
             </h1>
 
             {/* Widgets */}
-            <div style={{
-                display: "flex",
-                gap: 24,
-                width: "900px",                 // Centered width
-                marginBottom: 32,
-                flexWrap: "wrap",
-                justifyContent: "center"
-            }}>
-                <div style={{
-                    flex: 1,
-                    minWidth: 220,
-                    background: "linear-gradient(90deg, #818cf8 0%, #38bdf8 100%)",
-                    borderRadius: "1.2rem",
-                    boxShadow: "0 2px 12px rgba(59,130,246,0.10)",
-                    padding: "1.5rem",
-                    color: "#fff",
-                    fontWeight: 700,
+            <div
+                style={{
                     display: "flex",
-                    alignItems: "center",
-                    fontSize: "1.2rem",
-                    justifyContent: "space-between"
-                }}>
+                    gap: 24,
+                    width: "100%",                // Make container full width
+                    maxWidth: 900,                // Limit max width for large screens
+                    marginBottom: 32,
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                }}
+            >
+                <div
+                    style={{
+                        flex: "1 1 220px",          // Allow to grow and shrink, min width 220px
+                        minWidth: 220,
+                        maxWidth: 400,              // Optional: limit max width per widget
+                        background: "linear-gradient(90deg, #818cf8 0%, #38bdf8 100%)",
+                        borderRadius: "1.2rem",
+                        boxShadow: "0 2px 12px rgba(59,130,246,0.10)",
+                        padding: "1.5rem",
+                        color: "#fff",
+                        fontWeight: 700,
+                        display: "flex",
+                        alignItems: "center",
+                        fontSize: "1.2rem",
+                        justifyContent: "space-between",
+                        width: "100%",              // Responsive width
+                    }}
+                >
                     <span>TOTAL ITEMS</span>
                     <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         {items.length}
                         <Plus size={24} />
                     </span>
                 </div>
-                <div style={{
-                    flex: 1,
-                    minWidth: 220,
-                    background: "linear-gradient(90deg, #22c55e 0%, #38bdf8 100%)",
-                    borderRadius: "1.2rem",
-                    boxShadow: "0 2px 12px rgba(34,197,94,0.10)",
-                    padding: "1.5rem",
-                    color: "#fff",
-                    fontWeight: 700,
-                    display: "flex",
-                    alignItems: "center",
-                    fontSize: "1.2rem",
-                    justifyContent: "space-between"
-                }}>
+                <div
+                    style={{
+                        flex: "1 1 220px",
+                        minWidth: 220,
+                        maxWidth: 400,
+                        background: "linear-gradient(90deg, #22c55e 0%, #38bdf8 100%)",
+                        borderRadius: "1.2rem",
+                        boxShadow: "0 2px 12px rgba(34,197,94,0.10)",
+                        padding: "1.5rem",
+                        color: "#fff",
+                        fontWeight: 700,
+                        display: "flex",
+                        alignItems: "center",
+                        fontSize: "1.2rem",
+                        justifyContent: "space-between",
+                        width: "100%",
+                    }}
+                >
                     <span>TOTAL AMOUNT</span>
                     <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         Ksh {totalCost}
