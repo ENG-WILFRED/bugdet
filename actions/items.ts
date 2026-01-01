@@ -5,8 +5,9 @@ const prisma = new PrismaClient();
 
 export async function getItems() {
   const items = await prisma.item.findMany({
-    include: { author: true, comments: { include: { author: true } } }
+    include: { author: true, comments: { include: { author: true} } }
   });
+  console.log(items)
   // Map 'date' to 'createdAt' for frontend compatibility
   return items.map(item => ({
     ...item,

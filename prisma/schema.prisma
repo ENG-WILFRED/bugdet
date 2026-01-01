@@ -1,40 +1,130 @@
-// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql" 
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  name     String  @unique
-  password String
-  items    Item[] 
-
-  comments Comment[]
+  id        Int                    @id @default(autoincrement())
+  name      String                 @unique
+  password  String
+  email     String?
+  phone     String?
+  address   String?
+  city      String?
+  country   String?
+  items     Item[]
+  comments  Comment[]
+  reactions CommentReaction[]
+  mentions  CommentMentionedUser[]
+  flags     CommentFlag[]
+  transactions Transaction[]
+  reminderSettings ReminderSettings?
 }
+
 model Item {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   name      String
   cost      Float
   comment   String?
-  date      DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  author    User     @relation(fields: [authorId], references: [id])
+  date      DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  author    User      @relation(fields: [authorId], references: [id])
   authorId  Int
-
   comments  Comment[]
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   message   String
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
-  item      Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  itemId    Int
-  createdAt DateTime @default(now())
+  isDeleted Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  editedAt  DateTime?
+  parent    Comment?  @relation("CommentToReplies", fields: [parentId], references: [id])
+  parentId  Int?
+  replies   Comment[] @relation("CommentToReplies")
+
+  author   User @relation(fields: [authorId], references: [id])
+  authorId Int
+  item     Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  itemId   Int
+
+  mentions  CommentMentionedUser[]
+  reactions CommentReaction[]
+  flags     CommentFlag[]
+
+  // Placeholder for attachment (future)
+  // attachmentUrl String? // e.g., S3 signed URL
 }
+
+model CommentMentionedUser {
+  id        Int     @id @default(autoincrement())
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId Int
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+
+  @@unique([commentId, userId])
+}
+
+model CommentReaction {
+  id        Int     @id @default(autoincrement())
+  emoji     String // E.g., "👍", "😂"
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId Int
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+
+  @@unique([commentId, userId, emoji])
+}
+
+model CommentFlag {
+  id        Int     @id @default(autoincrement())
+  reason    String?
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId Int
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+
+  createdAt DateTime @default(now())
+
+  @@unique([commentId, userId])
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  description String
+  amount      Float
+  category    String   // e.g., "Food", "Transport", "Entertainment"
+  date        DateTime @default(now())
+  uploadedAt  DateTime @default(now())
+  receipt     String?  // URL to receipt file (optional)
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ReminderSettings {
+  id                  Int     @id @default(autoincrement())
+  user                User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId              Int     @unique
+  
+  isEnabled           Boolean @default(true)
+  reminderType        String  @default("daily") // "daily", "weekly", "custom"
+  dayOfWeek           Int?    // 0-6 (Mon-Sun) for weekly
+  reminderTime        String  @default("09:00") // HH:MM format
+  timesPerWeek        Int     @default(3) // How many times per week to upload
+  motivationalMessage String? @default("Keep tracking your expenses! 💚")
+  lastReminderSent    DateTime?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
